@@ -1,0 +1,66 @@
+@startuml
+title Connect-U Application Flowchart
+
+start
+
+:main();
+
+:loadData();
+note right
+  Reads CSV files:
+  - users.csv → User objects
+  - relations.csv → Friend relationships
+  - posts.csv → Post data
+end note
+
+:clearScreen();
+
+:showMainMenu();
+
+if (User choice?) then (1. Login)
+  :Enter username;
+  :userMap.get();
+  if (User found?) then (yes)
+    :showUserDashboard();
+    while (In dashboard?) is (yes)
+      if (Choice?) then (1. View My Posts)
+        :currentUser->timeline.printTimeline();
+      elseif (2. Create New Post) then
+        :Enter post content;
+        :createNewPost();
+      elseif (3. Add Friend) then
+        :Enter friend username;
+        :userMap.get();
+        :addFriendship();
+      elseif (4. Algorithmic Feed) then
+        :Build FeedHeap;
+        :Display posts by score;
+      elseif (5. View Sorted Friends) then
+        :currentUser->friendTree.printFriends();
+      elseif (6. Friend Recommendations) then
+        :recommendFriends();
+      elseif (7. Logout) then
+        :Return to Main Menu;
+        break
+      endif
+    endwhile
+  else (no)
+    :"User not found" message;
+  endif
+elseif (2. Register) then
+  :Enter username, scores;
+  :registerNewUser();
+  :Return to Main Menu;
+elseif (3. Exit & Save) then
+  :saveData();
+  note right
+    Writes to CSV files:
+    - users.csv
+    - relations.csv
+    - posts.csv
+  end note
+  :"Goodbye!" message;
+  stop
+endif
+
+@enduml

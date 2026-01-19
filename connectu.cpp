@@ -8,7 +8,7 @@
  * if your Lab 1 implementation is incomplete.
  * * ONLY uncomment saveData() after you have verified Lab 1 works!
  */
-
+//Simple edit for initial commit.
 #include <iostream>
 #include <string>
 #include <fstream>
