@@ -51,19 +51,36 @@ public:
     // Task: Add a new post to the FRONT of the list (O(1))
     void addPost(int pid, int uid, string content, int likes, long time) {
         // TODO: LAB 1
-
-
+        // 1. 创建新帖子节点
+        Post* newPost = new Post(pid, uid, content, likes, time);
+        
+        // 2. 将新帖子的 next 指向当前的 head
+        newPost->next = head;
+        
+        // 3. 将 head 更新为新帖子
+        head = newPost;
     }
 
     void printTimeline() {
         Post* current = head;
-        if (!current) { cout << "  (No posts yet)" << endl; return; }
-        
+        if (!current) { cout << "  (No posts yet)" << endl; return; 
+        }
         // Task: Traverse the linked list and print content
-        // TODO: LAB 1
-
+        // 任务：遍历链表并打印内容
+        while (current != nullptr) {
+            cout << "-----------------------------------" << endl;
+            cout << "  [ID: " << current->postId << "] " << current->likes << " Likes" << endl;
+            cout << "  Content: " << current->content << endl;
+            cout << "  Time: " << current->timestamp << endl;
+            
+            // 移动到下一个节点
+            current = current->next;
+        }
+        cout << "-----------------------------------" << endl;
     }
 };
+// TODO: LAB 1
+
 
 // Forward Declaration
 class User;
