@@ -179,7 +179,20 @@ private:
 
     unsigned long hashFunction(string key) {
         // TODO: LAB 2
-        return 0; 
+        unsigned long hash = 0;
+        unsigned long p = 31; //Prime number
+        unsigned long p_pow = 1; //p ^i
+        for (char c : key ) {
+            // Convert character to 1-based integer (a=1, b=2...)
+        int val = c - 'a' + 1; 
+
+        // Add (val * p^i) to hash and take modulo
+        hash = (hash + (val * p_pow)) % TABLE_SIZE;
+
+        // Update p_pow for the next character (p^i * p)
+        p_pow = (p_pow * p) % TABLE_SIZE;
+        }
+        return hash; 
     }
 
 public:
@@ -192,9 +205,9 @@ public:
 
     User* get(string key) {
         // --- TEMPORARY FALLBACK FOR LAB 1 ---
-        for(User* u : allUsers) {
+        /*for(User* u : allUsers) {
             if (u->username == key) return u;
-        }
+        }*/
         // TODO: LAB 2 - REPLACE ABOVE WITH HASH LOOKUP
         return nullptr;
     }
