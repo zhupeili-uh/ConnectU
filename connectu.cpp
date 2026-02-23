@@ -201,7 +201,13 @@ public:
         for (int i = 0; i < TABLE_SIZE; i++) table[i] = nullptr;
     }
 
-    void put(string key, User* user) { /* TODO: LAB 2 */ }
+    void put(string key, User* val) { /* TODO: LAB 2 */ 
+        unsigned long index = hashFunction(key); 
+        HashNode* newNode = new HashNode(key, val); 
+        newNode->next = table[index]; 
+        table[index] = newNode;
+    }
+
 
     User* get(string key) {
         // --- TEMPORARY FALLBACK FOR LAB 1 ---
