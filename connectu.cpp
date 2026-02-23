@@ -215,6 +215,15 @@ public:
             if (u->username == key) return u;
         }*/
         // TODO: LAB 2 - REPLACE ABOVE WITH HASH LOOKUP
+        unsigned long index = hashFunction(key);
+        HashNode* current = table[index];
+        while (current != nullptr) {
+            if(current->key == key) {
+                return current->value;
+            }
+            //move to next node in chain (collison handling part) 
+            current = current->next;
+        }
         return nullptr;
     }
 };
