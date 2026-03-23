@@ -40,7 +40,8 @@ struct Post {
         
     // TODO: LAB 3 - Implement Scoring Logic
     double getScore() {
-        return 0.0; 
+        double HoursOld = (time(0) - timestamp) / 3600.0;
+        return (likes * 10) + (1000.0 / (HoursOld + 1.0));
     }
 };
 
@@ -140,10 +141,39 @@ public:
 // BST Implementation
 BSTNode* FriendBST::insert(BSTNode* node, User* u) {
     // TODO: LAB 4
+    // Base case: If we've reached an empty spot, create the new node here
+    if (node == nullptr) {
+        return new BSTNode(u);
+    }
+
+    // Compare usernames to decide which direction to go (alphabetical order)
+    if (u->username < node->user->username) {
+        // Go left if the new username comes before the current node's username
+        node->left = insert(node->left, u);
+    } 
+    else if (u->username > node->user->username) {
+        // Go right if the new username comes after the current node's username
+        node->right = insert(node->right, u);
+    }
+    // Return the unchanged node pointer back up the recursive stack
     return node;
 }
+
+
 void FriendBST::printInOrder(BSTNode* node) {
     // TODO: LAB 4
+    if (node == nullptr) {
+        return;
+    }
+
+    // 1. Visit the left subtree first (names earlier in the alphabet)
+    printInOrder(node->left);
+
+    // 2. Print the current node's username
+    cout << "  - " << node->user->username << endl;
+
+    // 3. Visit the right subtree (names later in the alphabet)
+    printInOrder(node->right);
 }
 
 // TODO: LAB 3 - Max Heap
@@ -152,13 +182,69 @@ private:
     Post* heap[1000]; 
     int size;
 
-    void heapifyDown(int index) { /* TODO: LAB 3 */ }
-    void heapifyUp(int index) { /* TODO: LAB 3 */ }
+    void heapifyDown(int index) { 
+        // 比较父节点和它的子节点，把较小的值往下沉
+        while (true) {
+            int leftChild = 2 * index + 1;
+            int rightChild = 2 * index + 2;
+            int largest = index;
+
+            // 检查左子节点是否大于当前最大值
+            if (leftChild < size && heap[leftChild]->getScore() > heap[largest]->getScore()) {
+                largest = leftChild;
+            }
+            // 检查右子节点是否大于当前最大值
+            if (rightChild < size && heap[rightChild]->getScore() > heap[largest]->getScore()) {
+                largest = rightChild;
+            }
+
+            // 如果最大值不是当前的父节点，就交换它们并继续下沉
+            if (largest != index) {
+                Post* temp = heap[index];
+                heap[index] = heap[largest];
+                heap[largest] = temp;
+                index = largest;
+            } else {
+                break; // 已经满足最大堆性质
+            }
+        }
+    }
+
+    void heapifyUp(int index) { 
+        // 比较当前节点和它的父节点，把较大的值往上冒泡
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[index]->getScore() > heap[parent]->getScore()) {
+                // 交换
+                Post* temp = heap[index];
+                heap[index] = heap[parent];
+                heap[parent] = temp;
+                index = parent; // 继续往上检查
+            } else {
+                break; // 已经满足最大堆性质
+            }
+        }
+    }
 
 public:
     FeedHeap() : size(0) {}
-    void push(Post* p) { /* TODO: LAB 3 */ }
-    Post* popMax() { return nullptr; /* TODO: LAB 3 */ }
+
+    void push(Post* p) { 
+        if (size >= 1000) return; // 防止数组越界
+        heap[size] = p;           // 把新帖子放在数组末尾
+        heapifyUp(size);          // 将其冒泡到正确的位置
+        size++;
+    }
+
+    Post* popMax() { 
+        if (size == 0) return nullptr;
+        Post* maxPost = heap[0];   // 拿到分数最高的帖子 (根节点)
+        heap[0] = heap[size - 1];  // 把数组最后一个元素挪到根节点
+        size--;
+        heapifyDown(0);            // 把新的根节点下沉到正确的位置
+        return maxPost;
+    }
+
     bool isEmpty() { return size == 0; }
 };
 
