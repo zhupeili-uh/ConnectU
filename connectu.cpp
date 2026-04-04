@@ -379,11 +379,61 @@ void addFriendship(User* requester, User* target) {
     cout << "\n[SUCCESS] You are now friends with @" << target->username << endl;
 }
 
+
+
 // TODO: LAB 5 - Breadth First Search
 void recommendFriends(User* startUser) {
     cout << "\n[GRAPH ANALYSIS] Finding friends of friends..." << endl;
-    // TODO: LAB 5
+    
+    // 1. Create a queue for BFS and a set to track visited user IDs
+    queue<User*> q;
+    set<int> visited;
+
+    // 2. Mark myself (startUser) as visited so you don't recommend myself
+    visited.insert(startUser->userId);
+
+    // 3. Add all DIRECT friends to the queue and mark them as visited
+    // (We do this because we only want to recommend people who are NOT already our friends)
+    for (User* directFriend : startUser->getFriendsList()) {
+        q.push(directFriend);
+        visited.insert(directFriend->userId);
+    }
+
+    bool foundRecommendation = false;
+
+    // 4. BFS Loop: Process the queue to find Level 2 connections
+    while (!q.empty()) {
+        // Dequeue a user (a direct friend)
+        User* currentFriend = q.front();
+        q.pop();
+
+        // Look at their friends (these are the "friends of friends")
+        for (User* fof : currentFriend->getFriendsList()) {
+            
+            // 5. If this person is not in our visited set (meaning they aren't us, 
+            // and they aren't already our direct friend)
+            if (visited.find(fof->userId) == visited.end()) {
+                
+                // Print the recommendation
+                cout << "  - You might know: @" << fof->username << " (Friend of @" << currentFriend->username << ")" << endl;
+                
+                // Mark them as visited so we don't recommend the exact same person twice
+                visited.insert(fof->userId);
+                foundRecommendation = true;
+            }
+        }
+    }
+
+    // Edge case handling if no recommendations exist
+    if (!foundRecommendation) {
+        cout << "  No new recommendations found at this time." << endl;
+    }
 }
+
+
+
+
+
 
 // ==========================================
 // FILE I/O 
